@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lanyage.springsecurity.dao.UserDao">
+
+    <resultMap id="userAndRole" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <collection property="roles" ofType="Role">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="findUserByUsername" resultMap="userAndRole">
+        select sys_user.id, sys_user.username, sys_user.password,sys_role.id role_id, sys_role.name role_name
+        from sys_user
+        join sys_role_user
+        on sys_user.id=sys_role_user.sys_user_id
+        join sys_role
+        on sys_role_user.sys_role_id = sys_role.id
+        where username = #{username};
+    </select>
+
+    <insert id="saveUser" parameterType="User">
+        insert into sys_user(username, password) values(#{user.username}, #{user.password});
+    </insert>
+</mapper>
